@@ -9,7 +9,7 @@
 4、使用setAttribute方法来更新箭头的transform属性，包括平移（translate）和旋转（rotate）。-->
 
 
-<svg viewBox="-1.97 0.1 1921.87 1080" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg viewBox="-1.97 0.1 1400 780" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="306.4618" y1="279.1827" x2="1129.1976" y2="279.1827">
         <stop offset="0" style="stop-color: #1ebcd1" />
         <stop offset="1" style="stop-color: #65e5b3" />
