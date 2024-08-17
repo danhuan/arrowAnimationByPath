@@ -1,0 +1,124 @@
+<!--
+打开该文件可直接预览效果
+实现：多个箭头沿着路径运动。以不同的起始位置，并且箭头会随着路径改变方向.
+思路：计算路径上每一点的切线方向，并相应地旋转箭头。
+以下是关键步骤的概述，以确保箭头能够随路径转变方向：
+1、获取SVG路径元素的引用，并计算其总长度。
+2、使用getPointAtLength方法来获取路径上特定长度的点的位置。
+3、计算当前点和下一个点的方向，以此来确定箭头应该旋转的角度。
+4、使用setAttribute方法来更新箭头的transform属性，包括平移（translate）和旋转（rotate）。-->
+
+
+<svg viewBox="-1.97 0.1 1921.87 1080" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="306.4618" y1="279.1827" x2="1129.1976" y2="279.1827">
+        <stop offset="0" style="stop-color: #1ebcd1" />
+        <stop offset="1" style="stop-color: #65e5b3" />
+    </linearGradient>
+    <linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="303.9141" y1="376.9243" x2="1124.6223" y2="376.9243">
+        <stop offset="0" style="stop-color: #feab50" />
+        <stop offset="1" style="stop-color: #fee36e" />
+    </linearGradient>
+    <linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="303.8914" y1="-4136.8379" x2="1125.0929" y2="-4136.8379" gradientTransform="matrix(1 0 0 -1 0 -3665.7734)">
+        <stop offset="0" style="stop-color: #6fa0ff" />
+        <stop offset="1" style="stop-color: #57d8fd" />
+    </linearGradient>
+    <path id="path1" style="fill: none; stroke: url(#SVGID_1_); stroke-width: 14; stroke-miterlimit: 10" d="M306.5,231.18c0,0,118.05-0.7,138.91,0&#10;&#9;c27.13,0.91,27.37,17.18,27.28,29.68c-0.08,12.5-0.53,18.4-0.27,43.35c-0.02,19.04,13.36,23.28,33.44,23.28&#10;&#9;c20.09,0,623.33,0,623.33,0" />
+    <path id="path2" style="fill: none; stroke: url(#SVGID_2_); stroke-width: 14; stroke-miterlimit: 10" d="M303.91,376.92 H1124.62" />
+    <path id="path3" style="fill: none; stroke: url(#SVGID_3_); stroke-width: 14; stroke-miterlimit: 10" d="M303.91,516.35c0,0,119.7,0.39,140.56-0.31&#10;&#9;c27.13-0.91,27.37-17.18,27.28-29.68c-0.08-12.5-0.5-18.53-0.24-43.48c-0.02-19.04,13.32-17.16,33.41-17.16s620.16,0,620.16,0" />
+
+    <!-- 定义箭头图形 -->
+    <defs>
+        <g id="arrow">
+            <!-- 箭头头部 -->
+            <polygon points="0,0 -5,-5 -5,5" fill="#fff" stroke="#fff" stroke-width="0.5" stroke-miterlimit="10" />
+            <!-- 箭头尾巴，这里使用矩形 -->
+            <rect x="-16" y="-1.5" width="15" height="3" fill="#fff" />
+        </g>
+    </defs>
+
+    <!--  定义多个箭头 -->
+    <use id="arrow1" xlink:href="#arrow" x="0" y="0" />
+    <use id="arrow2" xlink:href="#arrow" x="0" y="0" />
+    <use id="arrow3" xlink:href="#arrow" x="0" y="0" />
+    <use id="arrow4" xlink:href="#arrow" x="0" y="0" />
+    <use id="arrow5" xlink:href="#arrow" x="0" y="0" />
+    <use id="arrow6" xlink:href="#arrow" x="0" y="0" />
+    <use id="arrow7" xlink:href="#arrow" x="0" y="0" />
+    <use id="arrow8" xlink:href="#arrow" x="0" y="0" />
+    <use id="arrow9" xlink:href="#arrow" x="0" y="0" />
+    <use id="arrow10" xlink:href="#arrow" x="0" y="0" />
+    <use id="arrow11" xlink:href="#arrow" x="0" y="0" />
+    <use id="arrow12" xlink:href="#arrow" x="0" y="0" />
+
+   <script>//<![CDATA[
+    /**
+     * 多个箭头沿着路线运动
+     * @param arrowElementIds 箭头元素数组集合
+     * @param pathElementId 路径元素
+     * @param duration 动画持续时间
+     */
+    function animateByPath(arrowElementIds, pathElementId, duration = 8000) {
+      const arrows = []
+      arrowElementIds.forEach(arrowElementId => {
+        arrows.push(document.getElementById(arrowElementId))
+      })
+      const curvePath = document.getElementById(pathElementId)
+      const curveLength = curvePath.getTotalLength()
+
+      let lastTime = 0
+
+      function animateArrow(timestamp) {
+        if (!lastTime) lastTime = timestamp
+        const progress = (timestamp - lastTime) / duration
+        const delay = 1 / arrows.length // 每个箭头需延迟的百分比，使每个箭头在路径上均匀分布
+
+        arrows.forEach((arrow, index) => {
+          // 计算每个箭头在路径上的位置，超过1则从头开始运动
+          const comProcess = progress + delay * index
+          const t = (comProcess >= 1 ? comProcess - 1 : comProcess) * curveLength
+          // 获取当前点的位置和方向
+          const point = curvePath.getPointAtLength(t)
+          const nextPoint = curvePath.getPointAtLength(Math.min(t + 0.1, curveLength))
+          const angle = Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * (180 / Math.PI)
+          // 更新箭头的位置和方向
+          arrow.setAttribute('transform', 'translate(' + point.x + ',' + point.y + ') rotate(' + angle + ',0,0)')
+        })
+
+        if (progress < 1) {
+          requestAnimationFrame(animateArrow)
+        } else {
+          lastTime = 0 // 重置时间，以便重新开始动画
+          requestAnimationFrame(animateArrow)
+        }
+      }
+      // 开始动画
+      requestAnimationFrame(animateArrow)
+    }
+
+
+    // 配置各个路径上运动哪些箭头，动画时间
+    const animateJson = [
+        {
+          pathElementId: 'path1',
+          arrowElementIds: ['arrow1', 'arrow2', 'arrow3', 'arrow4'],
+          duration: 10000
+        },
+        {
+          pathElementId: 'path2',
+          arrowElementIds: ['arrow5', 'arrow6', 'arrow7', 'arrow8'],
+          duration: 10000
+        },
+        {
+          pathElementId: 'path3',
+          arrowElementIds: ['arrow9', 'arrow10', 'arrow11', 'arrow12'],
+          duration: 10000
+        }
+    ]
+
+    // 为每条路径执行动画
+    animateJson.forEach(item => {
+      animateByPath(item.arrowElementIds, item.pathElementId, item.duration)
+    })
+    //]]>
+    </script>
+</svg>
